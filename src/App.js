@@ -3,8 +3,8 @@ import NavBar from "./components/navbar";
 import { Route, Switch } from "react-router-dom";
 import AllPasswords from "./components/allPasswords";
 import Folders from "./components/folders";
-import Login from "./components/login";
-import Register from "./components/register";
+import LoginForm from "./components/loginForm";
+import RegisterForm from "./components/registerForm";
 import Home from "./components/home"
 
 function App() {
@@ -15,8 +15,8 @@ function App() {
         <Switch>
           <Route path="/all-passwords" component={AllPasswords} />
           <Route path="/folders" component={Folders} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
+          <Route path="/login" component={LoginForm} />
+          <Route path="/register" component={RegisterForm} />
           <Route path="/" component={Home} />
         </Switch>
       </div>
