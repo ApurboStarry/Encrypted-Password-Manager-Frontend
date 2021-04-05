@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 
 class NavBar extends Component {
   render() {
+    const user = this.props.user;
     return (
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
@@ -27,9 +28,9 @@ class NavBar extends Component {
                 <NavLink
                   className="nav-link"
                   aria-current="page"
-                  to="/all-passwords"
+                  to="/passwords"
                 >
-                  All Passwords
+                  Passwords
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -37,11 +38,25 @@ class NavBar extends Component {
                   Folders
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/login">
-                  Login
-                </NavLink>
-              </li>
+
+              {!user && (
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/login">
+                    Login
+                  </NavLink>
+                </li>
+              )}
+
+              {user && (
+                <React.Fragment>
+                  <NavLink className="nav-link" to="/profile">
+                    {user.email}
+                  </NavLink>
+                  <NavLink className="nav-link" to="/logout">
+                    Logout
+                  </NavLink>
+                </React.Fragment>
+              )}
             </ul>
           </div>
         </div>

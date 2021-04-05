@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Input from "./common/input";
 import * as userService from "../services/userService";
-
+import auth from "../services/authService";
 class RegisterForm extends Component {
   state = {
     data: { email: "", password: "", confirmPassword: "" },
@@ -36,7 +36,17 @@ class RegisterForm extends Component {
   };
 
   doSubmit = async () => {
-    await userService.register(this.state.data);
+    try {
+      const response = await userService.register(this.state.data);
+      auth.loginWithJwt(response.headers["x-auth-token"]);
+      window.location = "/";
+    } catch(ex) {
+      if(ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   validateProperty = ({ name, value }) => {
@@ -71,7 +81,7 @@ class RegisterForm extends Component {
     const { data, errors } = this.state;
 
     return (
-      <div style={{ marginLeft: 200, marginRight: 200, marginTop: 50 }}>
+      <div className="formStyle">
         <h1>Register</h1>
         <form onSubmit={this.handleSubmit}>
           <Input

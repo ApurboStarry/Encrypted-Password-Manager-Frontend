@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
 import Input from "./common/input";
-import auth from "../services/authService";
-class LoginForm extends Component {
+import httpService from "../services/httpService";
+import { apiUrl } from "../config.json";
+
+const apiEndpoint = apiUrl + "/passwords";
+
+class AddPassword extends Component {
   state = {
-    data: { email: "", password: "" },
+    data: { url: "", username: "", password: "" },
     errors: {},
   };
 
@@ -12,11 +15,15 @@ class LoginForm extends Component {
     const errors = {};
 
     const { data } = this.state;
-    if (data.email.trim() === "") {
-      errors.email = "Email is required";
+
+    if (data.url.trim() === "") {
+      errors.url = "URL is required";
+    }
+    if (data.username.trim() === "") {
+      errors.username = "Username is required";
     }
     if (data.password.trim() === "") {
-      errors.password = "Master Password is required";
+      errors.password = "Password is required";
     }
 
     return Object.keys(errors).length === 0 ? null : errors;
@@ -35,26 +42,26 @@ class LoginForm extends Component {
 
   doSubmit = async () => {
     try {
-      const { data } = this.state;
-      await auth.login(data.email, data.password);
-
-      const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/";
-    } catch(ex) {
-      if(ex.response && ex.response.status === 400) {
+      await httpService.post(apiEndpoint, this.state.data);
+      this.props.history.push("/passwords");
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
-        errors.email = ex.response.data;
+        errors.username = ex.response.data;
         this.setState({ errors });
       }
     }
   };
 
   validateProperty = ({ name, value }) => {
-    if (name === "email") {
-      if (value.trim() === "") return "Email is required";
+    if (name === "url") {
+      if (value.trim() === "") return "URL is required";
+    }
+    if (name === "username") {
+      if (value.trim() === "") return "Username is required";
     }
     if (name === "password") {
-      if (value.trim() === "") return "Master Password is required";
+      if (value.trim() === "") return "Password is required";
     }
   };
 
@@ -70,42 +77,46 @@ class LoginForm extends Component {
   };
 
   render() {
-    if(auth.getCurrentUser()) return <Redirect to="/" />
-
     const { data, errors } = this.state;
 
     return (
       <div className="formStyle">
-        <h1>Login</h1>
+        <h1>Add Password</h1>
         <form onSubmit={this.handleSubmit}>
           <Input
-            name="email"
-            value={data.email}
-            label="Email"
+            name="url"
+            value={data.url}
+            label="url"
             onChange={this.handleChange}
-            error={errors.email}
-            type="email"
+            error={errors.url}
+            type="url"
+          />
+          <Input
+            name="username"
+            value={data.username}
+            label="Username"
+            onChange={this.handleChange}
+            error={errors.username}
+            type="username"
           />
           <Input
             name="password"
             value={data.password}
-            label="Master Password"
+            label="Password"
             onChange={this.handleChange}
             error={errors.password}
             type="password"
           />
-          <button disabled={this.validate()} className="btn btn-primary">
-            Login
+          <button
+            disabled={this.validate()}
+            className="btn btn-primary"
+          >
+            Add
           </button>
-          <div style={{ marginTop: 10 }}>
-            <p>
-              Don't have an account? <Link to="/register">Register</Link>
-            </p>
-          </div>
         </form>
       </div>
     );
   }
 }
 
-export default LoginForm;
+export default AddPassword;

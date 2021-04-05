@@ -4,7 +4,8 @@ function log(error) {
   console.error(error);
 }
 
-export default {
+const defaultExportObj = {
   init,
   log,
 };
+export default defaultExportObj;

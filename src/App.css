@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+#passwordTable {
+  margin: auto;
+}
+
+#addPassword {
+  margin: 20px;
+}
+
+.formStyle {
+  margin: auto;
+  padding-left: 15%;
+  padding-right: 15%;
+  padding-top: 20px;
+}
