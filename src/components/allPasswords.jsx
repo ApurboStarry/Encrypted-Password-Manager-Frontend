@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-import { apiUrl } from "../config.json";
 import httpService from "../services/httpService";
-
-const apiEndpoint = apiUrl + "/passwords";
+import passwordService from "../apiServices/passwordService";
 class AllPasswords extends Component {
   state = { passwords: [], showModal: false, passwordToBeDeleted: {} };
   async componentDidMount() {
-    const { data: passwords } = await httpService.get(apiEndpoint);
+    const passwords = await passwordService.getAllPasswords();
     this.setState({ passwords, showModal: false });
     console.log(this.state.passwords);
   }
@@ -60,7 +58,7 @@ class AllPasswords extends Component {
     this.setState({ showModal: false, passwords: newPasswords });
 
     try {
-      await httpService.delete(apiEndpoint + "/" + password._id);
+      await passwordService.deletePassword(password._id);
     } catch (ex) {
       this.setState({ passwords: originalPasswords });
     }

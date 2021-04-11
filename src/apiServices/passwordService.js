@@ -4,7 +4,8 @@ const {apiUrl} = require("../config.json");
 const apiEndpoint = apiUrl + "/passwords";
 
 async function getAllPasswords() {
-
+  const { data: passwords } = await httpService.get(apiEndpoint);
+  return passwords;
 }
 
 async function getPasswordById(passwordId) {
@@ -21,7 +22,7 @@ async function updatePassword(passwordId, passwordBody) {
 }
 
 async function deletePassword(passwordId) {
-
+  return httpService.delete(apiEndpoint + "/" + passwordId);
 }
 
 const defaultExportObj = {

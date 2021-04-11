@@ -12,11 +12,18 @@ async function getFolderById(folderId) {
 
 }
 
-async function createNewFolder(folderBody) {}
+async function createNewFolder(folderBody) {
+  const { data: folder } = await httpService.post(apiEndpoint, folderBody);
+  return folder;
+}
 
-async function updateFolder(folderId, folderBody) {}
+async function updateFolder(folderId, folderBody) {
+  return httpService.put(apiEndpoint + "/" + folderId, { name: folderBody.name });
+}
 
-async function deleteFolder(folderId) {}
+async function deleteFolder(folderId) {
+  return httpService.delete(apiEndpoint + "/" + folderId);
+}
 
 const defaultExportObj = {
   getAllFolders,
