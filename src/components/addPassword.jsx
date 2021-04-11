@@ -7,9 +7,18 @@ const apiEndpoint = apiUrl + "/passwords";
 
 class AddPassword extends Component {
   state = {
-    data: { url: "", username: "", password: "" },
+    data: { url: "", username: "", password: "", folderId: "0" },
     errors: {},
+    folders: []
   };
+
+  async componentDidMount() {
+    let { data:folders } = await httpService.get(apiUrl + "/folders");
+    folders = folders.filter(folder => folder.name !== "uncategorized");
+    
+    this.setState({ folders });
+  }
+  
 
   validate = () => {
     const errors = {};
@@ -107,10 +116,26 @@ class AddPassword extends Component {
             error={errors.password}
             type="password"
           />
-          <button
-            disabled={this.validate()}
-            className="btn btn-primary"
-          >
+          <div className="form-group">
+            <label htmlFor="folderId">Folder</label>
+            <select
+              name="folderId"
+              onChange={this.handleChange}
+              id="folderId"
+              className="form-control"
+              value={this.state.data.folderId}
+            >
+              <option value="0"></option>
+              { this.state.folders.map(folder => {
+                return (
+                  <option key={folder._id} value={folder._id}>
+                    {folder.name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <button disabled={this.validate()} className="btn btn-primary">
             Add
           </button>
         </form>

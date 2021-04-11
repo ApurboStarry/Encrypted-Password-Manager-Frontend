@@ -49,10 +49,6 @@ class AllPasswords extends Component {
     );
   };
 
-  handlePasswordEdit(password) {
-    console.log("To edit", password);
-  }
-
   handleDeleteButtonClick(password) {
     this.setState({ showModal: true, passwordToBeDeleted: password });
   }
