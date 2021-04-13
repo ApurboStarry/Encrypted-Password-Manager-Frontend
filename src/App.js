@@ -17,6 +17,8 @@ import ProtectedRoute from "./components/common/protectedRoute";
 import AddPassword from "./components/addPassword";
 import EditPassword from "./components/editPassword";
 import FolderContents from "./components/folderContents";
+import Files from "./components/files";
+import AddFile from "./components/addFile";
 
 class App extends Component {
   state = {};
@@ -37,9 +39,15 @@ class App extends Component {
           <Switch>
             <ProtectedRoute path="/passwords" component={AllPasswords} />
             <ProtectedRoute path="/folders" component={Folders} />
+            
+            <ProtectedRoute path="/files" component={Files} />
+            <ProtectedRoute path="/add-file" component={AddFile} />
+
             <ProtectedRoute path="/add-password" component={AddPassword} />
             <ProtectedRoute path="/edit-password" component={EditPassword} />
+            
             <ProtectedRoute path="/folder-contents" component={FolderContents} />
+            
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
             <Route path="/register" component={RegisterForm} />

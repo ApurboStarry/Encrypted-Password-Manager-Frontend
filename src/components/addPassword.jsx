@@ -1,24 +1,40 @@
 import React, { Component } from "react";
 import Input from "./common/input";
-import httpService from "../services/httpService";
 import { apiUrl } from "../config.json";
+import httpService from "../services/httpService";
+import folderService from "../apiServices/folderService.js";
+
 
 const apiEndpoint = apiUrl + "/passwords";
 
 class AddPassword extends Component {
   state = {
-    data: { url: "", username: "", password: "", folderId: "0" },
+    data: { url: "", username: "", password: "", folderId: "" },
     errors: {},
-    folders: []
+    folders: [],
   };
 
-  async componentDidMount() {
-    let { data:folders } = await httpService.get(apiUrl + "/folders");
-    folders = folders.filter(folder => folder.name !== "uncategorized");
-    
-    this.setState({ folders });
+  async getFolders() {
+    const folders = await folderService.getAllFolders();
+    console.log("folders", folders);
+
+    for (let i = 0; i < folders.length; i++) {
+      if (folders[i].name === "uncategorized") {
+        folders[i].name = "";
+      }
+    }
+
+    folders.sort((a, b) => (a.name.lenght < b.name.length ? 1 : -1));
+
+    return folders;
   }
-  
+
+  async componentDidMount() {
+    const folders = await this.getFolders();
+
+    const data = { url: "", username: "", password: "", folderId: folders[0]._id };
+    this.setState({ data, folders });
+  }
 
   validate = () => {
     const errors = {};
@@ -126,7 +142,7 @@ class AddPassword extends Component {
               value={this.state.data.folderId}
             >
               <option value="0"></option>
-              { this.state.folders.map(folder => {
+              {this.state.folders.map((folder) => {
                 return (
                   <option key={folder._id} value={folder._id}>
                     {folder.name}
