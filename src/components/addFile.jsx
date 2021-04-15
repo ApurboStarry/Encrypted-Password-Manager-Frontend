@@ -53,14 +53,21 @@ class AddFile extends Component {
 
   render() {
     return (
-      <div>
-        <h1>Upload File</h1>
+      <div className="formStyle">
+        <h1 style={{ marginBottom: 20 }}>Upload File</h1>
         <form onSubmit={this.handleFileUpload}>
-          <input type="file" onChange={this.fileChangeHandler} />
+          <div>
+            <input
+              class="form-control form-control-lg"
+              id="formFileLg"
+              type="file"
+              onChange={this.fileChangeHandler}
+            />
+          </div>
           <br />
           <br />
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: 40 }}>
             <label htmlFor="folderId">Folder</label>
             <select
               name="folderId"
@@ -79,7 +86,7 @@ class AddFile extends Component {
             </select>
           </div>
 
-          <button type="submit">Submit File to Backend</button>
+          <button className="btn btn-primary">Upload</button>
         </form>
       </div>
     );

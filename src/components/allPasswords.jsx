@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-import httpService from "../services/httpService";
 import passwordService from "../apiServices/passwordService";
 class AllPasswords extends Component {
   state = { passwords: [], showModal: false, passwordToBeDeleted: {} };
@@ -76,7 +75,7 @@ class AllPasswords extends Component {
         >
           Add Password
         </button>
-        {this.state.passwords.length === 0 && <h1>No passwords to show</h1>}
+        {this.state.passwords.length === 0 && <h1>No password to show</h1>}
         {this.state.passwords.length > 0 && (
           <div id="passwordTable">
             <table className="table">
