@@ -3,6 +3,9 @@ import { Button, Modal } from "react-bootstrap";
 
 import fileService from "../apiServices/fileService";
 import folderService from "../apiServices/folderService";
+import encryptPassword from "../securityServices/encryptPassword";
+import getAuthKey from "../securityServices/getAuthKey";
+import getVaultKey from "../securityServices/getVaultKey";
 
 class Files extends Component {
   state = {
@@ -31,11 +34,106 @@ class Files extends Component {
   }
 
   encryptText(secretText, password) {
-    // const dataAsBytes = UTF8.
+    const dataAsBytes = new TextEncoder("utf-8").encode(secretText);
+    const passwordAsBytes = new TextEncoder("utf-8").encode(password);
+
+    let salt, iv;
+
+    window.crypto.subtle.importKey(
+      "raw",
+      passwordAsBytes,
+      "PBKDF2",
+      false, 
+      ["deriveKey"]
+    )
+    .then((passwordKey) => {
+      salt = window.crypto.getRandomValues(new Uint8Array(32));
+      return window.crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt,
+          iterations: 250000,
+          hash: { name: "SHA-256" }
+        },
+        passwordKey,
+        {
+          name: "AES-GCM",
+          length: 256
+        },
+        true,
+        ["encrypt"]
+      );
+    })
+    .then( aesKey => {
+      console.log("aesKey:", aesKey);
+
+      iv = window.crypto.getRandomValues(new Uint8Array(12));
+      return window.crypto.subtle.encrypt(
+        {
+          name: "AES-GCM",
+          iv
+        },
+        aesKey,
+        dataAsBytes
+      );
+    })
+    .then(encryptedContent => {
+      const encryptedBytes = new Uint8Array(encryptedContent);
+      // const encryptedPackage = concat(
+      //   salt, 
+      //   iv, 
+      //   encryptedBytes
+      // );
+
+      // console.log("salt", salt);
+      // console.log("iv", iv);
+      // console.log("encryptedBytes", encryptedBytes);
+
+      let encryptedPackage = new Uint8Array([ ...salt, ...iv, ...encryptedBytes]);
+      // console.log("encryptedPackage", encryptedPackage);
+
+      const finalOutput = Buffer.from(encryptedPackage).toString("base64");
+      console.log("finalOutput", finalOutput);
+    })
   }
 
+  // async getVaultKey(email, masterPassword) {
+  //   const passwordAsBytes = new TextEncoder("utf-8").encode(email + masterPassword);
+  //   const passwordKey = await window.crypto.subtle.importKey(
+  //     "raw",
+  //     passwordAsBytes,
+  //     "PBKDF2",
+  //     false, 
+  //     ["deriveBits"]
+  //   );
+  //   const salt = window.crypto.getRandomValues(new Uint8Array(32));
+  //   const keyBuffer = await window.crypto.subtle.deriveBits(
+  //     {
+  //       name: "PBKDF2",
+  //       hash: "SHA-256",
+  //       salt: salt,
+  //       iterations: 250000
+  //     },
+  //     passwordKey,
+  //     256
+  //   );
+
+  //   const keyArray = Array.from(new Uint8Array(keyBuffer)); 
+  //   console.log("keyArray:", keyArray);
+  //   const vaultKey = Buffer.from(keyArray).toString("base64");
+  //   console.log("vaultKey:", vaultKey);
+  //   console.log(Buffer.from(vaultKey, "base64"));
+  // }
+
   async componentDidMount() {
-    console.log(UTF8.encode("Hello World"));
+    const vaultKey = await getVaultKey("hasinapurbo984@gmail.com", "This is a master password");
+    console.log("vaultKey:", vaultKey);
+
+    const authKey = await getAuthKey("hasinapurbo984@gmail.com", "This is a master password");
+    console.log("authKey:", authKey);
+
+    encryptPassword("Mw5hunZONXGL1m6H3A63TRSRKS7dswxCDLfOAMGkiN8=", "I don't know");
+
     const files = await fileService.getAllFiles();
     const folders = await this.getFolders();
     this.setState({ files, folders, folderId: folders[0]._id });
